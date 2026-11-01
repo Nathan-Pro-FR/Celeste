@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#101426">
+<meta name="description" content="Registre Céleste — Ton univers. Tes étoiles.">
+<title>Registre Céleste</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+/* ============ Registre Céleste — feuille de style principale ============ */
+:root{
+  --bg:#101426;
+  --bg2:#1C2340;
+  --bleu:#7EC8FF;
+  --violet:#B794F6;
+  --or:#FFD98E;
+  --blanc:#FFFFFF;
+  --texte:#E8ECF8;
+  --texte-faible:#9AA3C0;
+  --danger:#FF8A8A;
+  --succes:#9BE8B7;
+  --rayon:14px;
+  --ombre:0 6px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation:none!important;transition:none!important;}
+}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--texte);
+  min-height:100vh;
+  line-height:1.5;
+  /* halos discrets célestes */
+  background-image:
+    radial-gradient(600px 300px at 85% -5%, rgba(126,200,255,.10), transparent 60%),
+    radial-gradient(500px 280px at -10% 20%, rgba(183,148,246,.10), transparent 60%),
+    radial-gradient(700px 400px at 50% 115%, rgba(255,217,142,.05), transparent 60%);
+  background-attachment:fixed;
+}
+h1,h2,h3{font-weight:700;letter-spacing:.2px;}
+button{font-family:inherit;cursor:pointer;}
+input,textarea,select{font-family:inherit;font-size:1rem;color:var(--texte);}
+a{color:var(--bleu);}
+
+/* ---------- En-tête ---------- */
+header.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:.6rem;
+  padding:.7rem 1rem;
+  background:rgba(16,20,38,.88);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.topbar .logo{font-size:1.25rem;}
+.topbar .titre{font-size:1.05rem;font-weight:700;background:linear-gradient(90deg,var(--or),var(--bleu));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap;}
+.topbar .devise{margin-left:auto;font-size:.75rem;color:var(--texte-faible);font-style:italic;}
+
+/* ---------- Conteneur principal ---------- */
+main{max-width:920px;margin:0 auto;padding:1rem 1rem 6.5rem;}
+@media(min-width:720px){main{padding-bottom:2rem;}}
+
+/* ---------- Cartes ---------- */
+.carte{
+  background:var(--bg2);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--rayon);
+  padding:1rem;
+  box-shadow:var(--ombre);
+  margin-bottom:1rem;
+}
+.carte > h2{font-size:1.05rem;margin-bottom:.6rem;color:var(--blanc);}
+.carte > h2 .emoj{padding-right:.35rem;}
+
+/* ---------- Boutons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;min-width:44px;
+  padding:.55rem 1rem;
+  border-radius:12px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);color:var(--texte);
+  font-size:.95rem;font-weight:600;text-decoration:none;
+  transition:background .15s ease,transform .1s ease;
+}
+.btn:active{transform:scale(.97);}
+.btn:hover{background:rgba(255,255,255,.10);}
+.btn.principal{background:linear-gradient(135deg,var(--violet),var(--bleu));border:none;color:#0B0F1E;}
+.btn.principal:hover{filter:brightness(1.1);}
+.btn.danger{background:rgba(255,138,138,.12);border-color:rgba(255,138,138,.4);color:var(--danger);}
+.btn.succes{background:rgba(155,232,183,.12);border-color:rgba(155,232,183,.4);color:var(--succes);}
+.btn.petit{min-height:36px;padding:.35rem .7rem;font-size:.85rem;border-radius:10px;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+
+/* ---------- Formulaires ---------- */
+.champ{margin-bottom:.9rem;}
+.champ label{display:block;font-size:.85rem;color:var(--texte-faible);margin-bottom:.3rem;font-weight:600;}
+.champ input[type=text],.champ textarea,.champ select{
+  width:100%;padding:.7rem .8rem;border-radius:10px;
+  background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);
+}
+.champ input:focus,.champ textarea:focus,.champ select:focus{outline:2px solid var(--bleu);outline-offset:1px;}
+.champ .aide{font-size:.78rem;color:var(--texte-faible);margin-top:.25rem;}
+.champ .erreur{font-size:.8rem;color:var(--danger);margin-top:.25rem;display:none;}
+.champ.invalide input{border-color:var(--danger);}
+.champ.invalide .erreur{display:block;}
+textarea{min-height:110px;resize:vertical;}
+
+/* ---------- Sélecteur de niveau ---------- */
+.grille-niveaux{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin:.4rem 0;}
+@media(max-width:520px){.grille-niveaux{grid-template-columns:repeat(2,1fr);}}
+.btn-niveau{
+  display:flex;flex-direction:column;align-items:center;gap:.15rem;
+  padding:.6rem .3rem;border-radius:12px;min-height:58px;
+  background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);
+  color:var(--texte);font-size:.75rem;font-weight:600;
+}
+.btn-niveau .symbole{font-size:1.15rem;line-height:1.2;}
+.btn-niveau[aria-pressed="true"]{border-color:var(--or);background:rgba(255,217,142,.12);box-shadow:0 0 0 1px var(--or) inset;}
+.desc-niveau{font-size:.85rem;color:var(--or);min-height:1.4em;font-style:italic;}
+
+/* ---------- Distinctions ---------- */
+.grille-distinctions{display:flex;flex-wrap:wrap;gap:.5rem;}
+.btn-distinction{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.5rem .75rem;border-radius:999px;min-height:40px;
+  background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);
+  color:var(--texte);font-size:.85rem;
+}
+.btn-distinction[aria-pressed="true"]{border-color:var(--violet);background:rgba(183,148,246,.14);}
+.btn-distinction[aria-pressed="true"] .nom-dist{color:var(--violet);font-weight:700;}
+
+/* ---------- Badges / fiches ---------- */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:999px;font-size:.78rem;font-weight:700;background:rgba(126,200,255,.12);color:var(--bleu);border:1px solid rgba(126,200,255,.3);white-space:nowrap;}
+.badge.niveau{background:rgba(255,217,142,.10);color:var(--or);border-color:rgba(255,217,142,.35);}
+.badge.archive{background:rgba(154,163,192,.12);color:var(--texte-faible);border-color:rgba(154,163,192,.3);}
+.dist-symboles{font-size:1rem;letter-spacing:.1rem;}
+.carte-fiche{display:flex;gap:.8rem;align-items:center;text-decoration:none;color:inherit;}
+.avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;background:rgba(255,255,255,.06);border:2px solid rgba(255,217,142,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.avatar.grand{width:84px;height:84px;font-size:2.2rem;}
+.carte-fiche .infos{flex:1;min-width:0;}
+.carte-fiche .pseudo{font-weight:700;color:var(--blanc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.carte-fiche .meta{font-size:.78rem;color:var(--texte-faible);}
+.carte-fiche .actions{display:flex;flex-direction:column;gap:.35rem;}
+.liste-fiches{display:flex;flex-direction:column;gap:.6rem;}
+.carte-fiche-lien{display:block;padding:.8rem;}
+
+/* ---------- Recherche / filtres ---------- */
+.barre-outils{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;align-items:center;}
+.barre-outils input[type=search],.barre-outils select{
+  flex:1;min-width:140px;padding:.6rem .8rem;border-radius:10px;
+  background:var(--bg2);border:1px solid rgba(255,255,255,.12);
+}
+.check-ligne{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--texte-faible);}
+.check-ligne input{width:18px;height:18px;accent-color:var(--violet);}
+
+/* ---------- Statistiques ---------- */
+.stat-principaux{display:flex;gap:.8rem;flex-wrap:wrap;}
+.stat-bloc{flex:1;min-width:130px;text-align:center;padding:.9rem .5rem;border-radius:12px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.07);}
+.stat-bloc .valeur{font-size:1.7rem;font-weight:800;color:var(--or);}
+.stat-bloc .etiquette{font-size:.78rem;color:var(--texte-faible);}
+.barre-repart{display:flex;align-items:center;gap:.5rem;margin:.3rem 0;font-size:.8rem;}
+.barre-repart .etiquette{width:9.5rem;flex-shrink:0;color:var(--texte-faible);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.barre-repart .piste{flex:1;height:10px;border-radius:999px;background:rgba(0,0,0,.3);overflow:hidden;}
+.barre-repart .remplissage{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--violet),var(--bleu));}
+.barre-repart .nombre{width:2rem;text-align:right;color:var(--texte-faible);}
+
+/* ---------- Historique ---------- */
+.evt{display:flex;gap:.7rem;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.evt:last-child{border-bottom:none;}
+.evt .icone{font-size:1.2rem;flex-shrink:0;}
+.evt .corps{flex:1;min-width:0;}
+.evt .texte{font-size:.9rem;}
+.evt .texte .pseudo-ev{font-weight:700;color:var(--blanc);}
+.evt .heure{font-size:.75rem;color:var(--texte-faible);}
+.evt .valeurs{font-size:.82rem;color:var(--or);}
+
+/* ---------- États vides ---------- */
+.etat-vide{text-align:center;padding:2.2rem 1rem;color:var(--texte-faible);}
+.etat-vide .emoj{font-size:2.6rem;display:block;margin-bottom:.5rem;}
+.etat-vide p{margin-bottom:1rem;}
+
+/* ---------- Modales ---------- */
+.modal-fond{position:fixed;inset:0;z-index:100;background:rgba(5,7,15,.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:16px;max-width:480px;width:100%;max-height:88vh;overflow:auto;padding:1.2rem;box-shadow:var(--ombre);}
+.modal h3{margin-bottom:.8rem;color:var(--blanc);}
+.modal .actions-modal{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem;flex-wrap:wrap;}
+.modal p{margin-bottom:.6rem;font-size:.92rem;}
+.modal .avertissement{background:rgba(255,138,138,.08);border:1px solid rgba(255,138,138,.3);border-radius:10px;padding:.7rem;font-size:.85rem;color:var(--danger);margin:.6rem 0;}
+.modal .resume-import{background:rgba(0,0,0,.25);border-radius:10px;padding:.7rem;font-size:.85rem;margin:.6rem 0;max-height:180px;overflow:auto;}
+.resume-import .ligne{display:flex;justify-content:space-between;gap:.5rem;padding:.15rem 0;border-bottom:1px dashed rgba(255,255,255,.06);}
+.resume-import .ligne:last-child{border-bottom:none;}
+
+/* ---------- Notifications ---------- */
+#toast{position:fixed;left:50%;bottom:5.2rem;transform:translateX(-50%) translateY(20px);z-index:200;background:var(--bg2);border:1px solid rgba(255,217,142,.4);color:var(--texte);padding:.7rem 1.1rem;border-radius:999px;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:var(--ombre);max-width:90vw;text-align:center;}
+#toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------- Navigation basse ---------- */
+nav.tabbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:60;
+  display:flex;justify-content:space-around;
+  background:rgba(16,20,38,.94);backdrop-filter:blur(10px);
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:.35rem .2rem calc(.35rem + env(safe-area-inset-bottom));
+}
+.tabbar a{
+  display:flex;flex-direction:column;align-items:center;gap:.1rem;
+  min-width:56px;min-height:48px;justify-content:center;
+  font-size:.62rem;color:var(--texte-faible);text-decoration:none;border-radius:10px;
+}
+.tabbar a .emoj{font-size:1.15rem;}
+.tabbar a.actif{color:var(--or);}
+@media(min-width:720px){
+  nav.tabbar{top:0;bottom:auto;left:auto;right:1rem;background:transparent;border:none;backdrop-filter:none;position:absolute;padding:0;}
+  .tabbar a{flex-direction:row;font-size:.85rem;padding:.5rem .6rem;min-height:40px;}
+  .tabbar a .emoj{font-size:1rem;}
+}
+
+/* ---------- Divers ---------- */
+.filet{margin:1rem 0;border:none;border-top:1px solid rgba(255,255,255,.07);}
+.note-confidentialite{font-size:.8rem;color:var(--texte-faible);background:rgba(126,200,255,.06);border:1px solid rgba(126,200,255,.2);border-radius:10px;padding:.7rem;margin:.8rem 0;}
+.retour{display:inline-flex;align-items:center;gap:.3rem;color:var(--bleu);text-decoration:none;font-size:.88rem;margin-bottom:.7rem;min-height:44px;}
+.rang{font-size:1rem;font-weight:800;color:var(--or);width:2rem;flex-shrink:0;text-align:center;}
+.degrade-titre{background:linear-gradient(90deg,var(--or),var(--violet),var(--bleu));-webkit-background-clip:text;background-clip:text;color:transparent;}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<header class="topbar">
+  <span class="logo">🌌</span>
+  <span class="titre">Registre Céleste</span>
+  <span class="devise">Ton univers. Tes étoiles.</span>
+</header>
+
+<main id="app" aria-live="polite"><p style="padding:2rem;text-align:center;color:var(--texte-faible)">Ouverture de votre univers…</p></main>
+
+<nav class="tabbar" aria-label="Navigation principale">
+  <a href="#/accueil" data-route="accueil"><span class="emoj">🏠</span>Accueil</a>
+  <a href="#/etoiles" data-route="etoiles"><span class="emoj">⭐</span>Étoiles</a>
+  <a href="#/nouvelle" data-route="nouvelle"><span class="emoj">✨</span>Ajouter</a>
+  <a href="#/classement" data-route="classement"><span class="emoj">🌟</span>Rang</a>
+  <a href="#/historique" data-route="historique"><span class="emoj">📜</span>Journal</a>
+  <a href="#/parametres" data-route="parametres"><span class="emoj">⚙️</span>Réglages</a>
+</nav>
+
+<div id="toast" role="status"></div>
+<div id="modale"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   Registre Céleste — V1.0
+   Application privée : fiches, notation manuelle 1-10, distinctions,
+   commentaires, historique append-only, IndexedDB, export/import JSON.
+   Aucune donnée n'est transmise à un tiers.
+   ===================================================================== */
+
+/* ---------- Constantes métier (référentiel du cahier des charges) ---------- */
+
+const NIVEAUX = [
+  { niveau: 1,  titre: 'Étincelle',         symbole: '⭐',        description: 'Une présence sympathique.' },
+  { niveau: 2,  titre: 'Étoile naissante',  symbole: '⭐⭐',      description: 'Une personne agréable à retrouver.' },
+  { niveau: 3,  titre: 'Étoile brillante',  symbole: '⭐⭐⭐',    description: 'Une bonne entente.' },
+  { niveau: 4,  titre: 'Petite constellation', symbole: '⭐⭐⭐⭐', description: 'Une complicité qui se développe.' },
+  { niveau: 5,  titre: 'Constellation',     symbole: '⭐⭐⭐⭐⭐', description: 'Une amie que vous appréciez beaucoup.' },
+  { niveau: 6,  titre: 'Gardienne lunaire', symbole: '🌙',       description: 'Une relation de confiance.' },
+  { niveau: 7,  titre: 'Nébuleuse précieuse', symbole: '🌌',     description: 'Une amie très importante.' },
+  { niveau: 8,  titre: 'Joyau céleste',     symbole: '💎',       description: 'Une complicité exceptionnelle.' },
+  { niveau: 9,  titre: 'Astre légendaire',  symbole: '🌟',       description: 'Une place extrêmement particulière.' },
+  { niveau: 10, titre: 'Étoile éternelle',  symbole: '👑🌟✨',    description: 'Une personne exceptionnelle dans votre univers.' }
+];
+
+const DISTINCTIONS = [
+  { id: 'confiance',    nom: 'Lune de confiance', symbole: '🌙', sens: 'Personne avec qui vous pouvez parler librement.' },
+  { id: 'complicite',   nom: 'Étoile complice',   symbole: '💫', sens: 'Bonne entente et moments amusants.' },
+  { id: 'joyau',        nom: 'Joyau précieux',    symbole: '💎', sens: 'Personne particulièrement importante.' },
+  { id: 'protection',   nom: 'Aile protectrice',  symbole: '🪽', sens: 'Personne présente dans les moments difficiles.' },
+  { id: 'connexion',    nom: 'Connexion mystique', symbole: '🔮', sens: 'Complicité particulière.' },
+  { id: 'couronne',     nom: 'Couronne royale',   symbole: '👑', sens: 'Personne occupant une place très spéciale.' }
+];
+
+const TYPES_EVENEMENT = {
+  created:            { libelle: 'Fiche créée',                icone: '✨' },
+  level_changed:      { libelle: 'Niveau modifié',             icone: '🌠' },
+  distinction_added:  { libelle: 'Distinction ajoutée',        icone: '🏅' },
+  distinction_removed:{ libelle: 'Distinction retirée',        icone: '🌑' },
+  comment_changed:    { libelle: 'Commentaire modifié',        icone: '💬' },
+  archived:           { libelle: 'Fiche archivée',             icone: '📦' },
+  restored:           { libelle: 'Fiche restaurée',            icone: '♻️' },
+  deleted:            { libelle: 'Fiche supprimée',            icone: '🕳️' }
+};
+
+const VERSION_APP = '1.0.0';
+const NOM_APP = 'Registre Celeste';
+const SCHEMA_VERSION = 1;
+const LIMITE_AVATAR = 500 * 1024; // 500 Ko (données locales, à bon escient)
+
+/* ---------- Utilitaires ---------- */
+
+function uuid() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+function echapperHtml(t) {
+  return String(t ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function formatDateHeure(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  return d.toLocaleString('fr-FR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function toast(message) {
+  const el = document.getElementById('toast');
+  el.textContent = message;
+  el.classList.add('visible');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove('visible'), 2600);
+}
+
+/* ---------- Couche de persistance (IndexedDB) ---------- */
+
+const BD_NOM = 'registre-celeste';
+const BD_VERSION = 1;
+let bd = null;
+
+function ouvrirBD() {
+  return new Promise((resoudre, rejeter) => {
+    const requete = indexedDB.open(BD_NOM, BD_VERSION);
+    requete.onupgradeneeded = e => {
+      const base = e.target.result;
+      if (!base.objectStoreNames.contains('friends')) {
+        const fiches = base.createObjectStore('friends', { keyPath: 'id' });
+        fiches.createIndex('pseudo', 'pseudo', { unique: false });
+        fiches.createIndex('updatedAt', 'updatedAt', { unique: false });
+        fiches.createIndex('level', 'level', { unique: false });
+      }
+      if (!base.objectStoreNames.contains('history')) {
+        const hist = base.createObjectStore('history', { keyPath: 'id' });
+        hist.createIndex('friendId', 'friendId', { unique: false });
+        hist.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+      if (!base.objectStoreNames.contains('settings')) {
+        base.createObjectStore('settings', { keyPath: 'key' });
+      }
+    };
+    requete.onsuccess = () => resoudre(requete.result);
+    requete.onerror = () => rejeter(requete.error);
+  });
+}
+
+function magasin(nom, mode = 'readonly') {
+  return bd.transaction(nom, mode).objectStore(nom);
+}
+
+function toutLire(nom) {
+  return new Promise((resoudre, rejeter) => {
+    const req = magasin(nom).getAll();
+    req.onsuccess = () => resoudre(req.result || []);
+    req.onerror = () => rejeter(req.error);
+  });
+}
+
+function ecrire(nom, valeur) {
+  return new Promise((resoudre, rejeter) => {
+    const req = magasin(nom, 'readwrite').put(valeur);
+    req.onsuccess = () => resoudre();
+    req.onerror = () => rejeter(req.error);
+  });
+}
+
+function effacerCle(nom, cle) {
+  return new Promise((resoudre, rejeter) => {
+    const req = magasin(nom, 'readwrite').delete(cle);
+    req.onsuccess = () => resoudre();
+    req.onerror = () => rejeter(req.error);
+  });
+}
+
+function effacerTout() {
+  return Promise.all(['friends', 'history', 'settings'].map(n => new Promise((res, rej) => {
+    const req = magasin(n, 'readwrite').clear();
+    req.onsuccess = () => res();
+    req.onerror = () => rej(req.error);
+  })));
+}
+
+/* ---------- Écriture fiche + événements en une transaction ---------- */
+
+function enregistrerFicheEtEvenements(fiche, evenements) {
+  return new Promise((resoudre, rejeter) => {
+    const tx = bd.transaction(['friends', 'history'], 'readwrite');
+    tx.objectStore('friends').put(fiche);
+    const hist = tx.objectStore('history');
+    evenements.forEach(ev => hist.put(ev));
+    tx.oncomplete = () => resoudre();
+    tx.onerror = () => rejeter(tx.error);
+    tx.onabort = () => rejeter(tx.error || new Error('Transaction annulée'));
+  });
+}
+
+function supprimerFicheEtHistorique(idFiche, evenement) {
+  return new Promise((resoudre, rejeter) => {
+    const tx = bd.transaction(['friends', 'history'], 'readwrite');
+    tx.objectStore('friends').delete(idFiche);
+    if (evenement) tx.objectStore('history').put(evenement);
+    tx.oncomplete = () => resoudre();
+    tx.onerror = () => rejeter(tx.error);
+  });
+}
+
+async function ajouterEvenement(evenement) {
+  await ecrire('history', evenement);
+}
+
+function nouvelEvenement(idFiche, type, oldValue = null, newValue = null, reason = null) {
+  return {
+    id: uuid(),
+    friendId: idFiche,
+    type,
+    createdAt: new Date().toISOString(),
+    oldValue,
+    newValue,
+    reason
+  };
+}
+
+/* ---------- Requêtes métier ---------- */
+
+async function obtenirFiches() { return toutLire('friends'); }
+async function obtenirHistorique() { return toutLire('history'); }
+
+async function ficheActive(id) {
+  const fiches = await obtenirFiches();
+  return fiches.find(f => f.id === id) || null;
+}
+
+/* ---------- Modale générique ---------- */
+
+function ouvrirModale(html) {
+  document.getElementById('modale').innerHTML =
+    `<div class="modal-fond" role="dialog" aria-modal="true">${html}</div>`;
+}
+function fermerModale() {
+  document.getElementById('modale').innerHTML = '';
+}
+document.getElementById('modale').addEventListener('click', e => {
+  if (e.target.classList && e.target.classList.contains('modal-fond')) fermerModale();
+});
+
+function confirmerSimple(titre, message, libelleDanger, cb) {
+  ouvrirModale(`
+    <div class="modal">
+      <h3>${echapperHtml(titre)}</h3>
+      <p>${echapperHtml(message)}</p>
+      <div class="actions-modal">
+        <button class="btn" data-action="annuler">Annuler</button>
+        <button class="btn danger" data-action="confirmer">${echapperHtml(libelleDanger)}</button>
+      </div>
+    </div>`);
+  const fond = document.querySelector('.modal-fond');
+  fond.querySelector('[data-action=annuler]').onclick = fermerModale;
+  fond.querySelector('[data-action=confirmer]').onclick = () => { fermerModale(); cb(); };
+}
+
+function confirmerRenforce(titre, message, texteAttendu, libelleDanger, cb) {
+  ouvrirModale(`
+    <div class="modal">
+      <h3>${echapperHtml(titre)}</h3>
+      <div class="avertissement">${echapperHtml(message)}</div>
+      <div class="champ">
+        <label for="confirmation-texte">Tapez <strong>${echapperHtml(texteAttendu)}</strong> pour confirmer :</label>
+        <input type="text" id="confirmation-texte" autocomplete="off">
+        <div class="erreur">Le texte ne correspond pas.</div>
+      </div>
+      <div class="actions-modal">
+        <button class="btn" data-action="annuler">Annuler</button>
+        <button class="btn danger" data-action="confirmer" disabled>${echapperHtml(libelleDanger)}</button>
+      </div>
+    </div>`);
+  const fond = document.querySelector('.modal-fond');
+  const saisie = fond.querySelector('#confirmation-texte');
+  const btn = fond.querySelector('[data-action=confirmer]');
+  const champ = fond.querySelector('.champ');
+  saisie.addEventListener('input', () => {
+    const ok = saisie.value.trim() === texteAttendu;
+    btn.disabled = !ok;
+    champ.classList.toggle('invalide', saisie.value.length > 0 && !ok);
+  });
+  fond.querySelector('[data-action=annuler]').onclick = fermerModale;
+  btn.onclick = () => { if (saisie.value.trim() === texteAttendu) { fermerModale(); cb(); } };
+  setTimeout(() => saisie.focus(), 50);
+}
+
+/* ---------- Fragments d'affichage ---------- */
+
+function badgeNiveau(niveau) {
+  const ref = NIVEAUX[niveau - 1];
+  if (!ref) return '<span class="badge archive">Niveau inconnu</span>';
+  return `<span class="badge niveau" title="${echapperHtml(ref.titre)} — ${echapperHtml(ref.description)}">${ref.symbole} ${echapperHtml(ref.titre)}</span>`;
+}
+
+function symbolesDistinctions(ids) {
+  if (!ids || !ids.length) return '';
+  return `<span class="dist-symboles" title="${ids.map(i => { const d = DISTINCTIONS.find(x => x.id === i); return d ? d.nom : i; }).join(' · ')}">` +
+    ids.map(i => { const d = DISTINCTIONS.find(x => x.id === i); return d ? d.symbole : ''; }).join('') + '</span>';
+}
+
+function htmlAvatar(fiche, classe = '') {
+  if (fiche.avatar) {
+    return `<img class="avatar ${classe}" src="${echapperHtml(fiche.avatar)}" alt="Avatar de ${echapperHtml(fiche.pseudo)}">`;
+  }
+  return `<div class="avatar ${classe}" aria-hidden="true">🌟</div>`;
+}
+
+function htmlCarteFiche(f, options = {}) {
+  const archive = f.archived ? ' <span class="badge archive">archivée</span>' : '';
+  const actions = options.actions || '';
+  return `
+  <div class="carte carte-fiche-lien">
+    <a class="carte-fiche" href="#/fiche/${f.id}">
+      ${htmlAvatar(f)}
+      <div class="infos">
+        <div class="pseudo">${echapperHtml(f.pseudo)}</div>
+        <div style="margin:.2rem 0">${badgeNiveau(f.level)} ${symbolesDistinctions(f.distinctions)}${archive}</div>
+        <div class="meta">Modifiée le ${formatDate(f.updatedAt)}</div>
+      </div>
+    </a>
+    ${actions ? `<div class="actions">${actions}</div>` : ''}
+  </div>`;
+}
+
+function htmlEvenement(ev, pseudoMap) {
+  const meta = TYPES_EVENEMENT[ev.type] || { libelle: ev.type, icone: '❔' };
+  const pseudo = pseudoMap && pseudoMap.get(ev.friendId);
+  const nom = pseudo ? `<span class="pseudo-ev">${echapperHtml(pseudo)}</span>` : '<span class="pseudo-ev">(fiche supprimée)</span>';
+  let detail = '';
+  if (ev.type === 'level_changed') {
+    const ancien = NIVEAUX[(ev.oldValue || 1) - 1], nouveau = NIVEAUX[(ev.newValue || 1) - 1];
+    detail = `<div class="valeurs">Ancien niveau : ${ev.oldValue} (${ancien ? ancien.symbole : ''}) → Nouveau niveau : ${ev.newValue} (${nouveau ? nouveau.symbole : ''})</div>`;
+  } else if (ev.type === 'distinction_added' || ev.type === 'distinction_removed') {
+    const d = DISTINCTIONS.find(x => x.id === (ev.newValue || ev.oldValue));
+    detail = d ? `<div class="valeurs">${d.symbole} ${echapperHtml(d.nom)}</div>` : '';
+  }
+  const lien = pseudo ? ` <a href="#/fiche/${ev.friendId}" style="font-size:.78rem">voir la fiche</a>` : '';
+  return `
+  <div class="evt">
+    <span class="icone">${meta.icone}</span>
+    <div class="corps">
+      <div class="texte">${meta.libelle} — ${nom}${lien}</div>
+      ${detail}
+      ${ev.reason ? `<div class="heure">Motif : ${echapperHtml(ev.reason)}</div>` : ''}
+      <div class="heure">${formatDateHeure(ev.createdAt)}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Routage ---------- */
+
+const app = document.getElementById('app');
+
+function naviguer() {
+  const hash = location.hash || '#/accueil';
+  const [route, param] = hash.replace(/^#\//, '').split('/');
+  document.querySelectorAll('.tabbar a').forEach(a => {
+    a.classList.toggle('actif', a.dataset.route === route);
+  });
+  fermerModale();
+  switch (route) {
+    case 'accueil':     rendreAccueil(); break;
+    case 'etoiles':     rendreEtoiles(); break;
+    case 'nouvelle':    rendreFormulaire(null); break;
+    case 'fiche':       rendreFiche(param); break;
+    case 'modifier':    rendreFormulaire(param); break;
+    case 'classement':  rendreClassement(); break;
+    case 'historique':  rendreHistorique(); break;
+    case 'parametres':  rendreParametres(); break;
+    default:            rendreAccueil();
+  }
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener('hashchange', naviguer);
+
+/* ---------- Écran 1 : Accueil « Mes étoiles » ---------- */
+
+async function rendreAccueil() {
+  const [fiches, historique] = await Promise.all([obtenirFiches(), obtenirHistorique()]);
+  const actives = fiches.filter(f => !f.archived);
+  const archivees = fiches.length - actives.length;
+  const moyenne = actives.length
+    ? (actives.reduce((s, f) => s + f.level, 0) / actives.length).toFixed(1).replace('.', ',')
+    : null;
+
+  const recentes = [...actives].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 5);
+  const activites = [...historique].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 8);
+  const pseudoMap = new Map(fiches.map(f => [f.id, f.pseudo]));
+
+  const maxRepart = Math.max(1, ...NIVEAUX.map(n => actives.filter(f => f.level === n.niveau).length));
+
+  app.innerHTML = `
+  <h1 class="degrade-titre" style="margin:.4rem 0 1rem">Mes étoiles</h1>
+
+  <div class="carte">
+    <h2><span class="emoj">🌌</span>Vue d'ensemble</h2>
+    <div class="stat-principaux">
+      <div class="stat-bloc"><div class="valeur">${actives.length}</div><div class="etiquette">fiche${actives.length > 1 ? 's' : ''} active${actives.length > 1 ? 's' : ''}</div></div>
+      <div class="stat-bloc"><div class="valeur">${moyenne !== null ? moyenne : '—'}</div><div class="etiquette">niveau moyen (statistique)</div></div>
+      <div class="stat-bloc"><div class="valeur">${archivees}</div><div class="etiquette">archivée${archivees > 1 ? 's' : ''}</div></div>
+    </div>
+    <p style="font-size:.75rem;color:var(--texte-faible);margin-top:.6rem">La moyenne est un simple indicateur : elle ne modifie jamais les notes individuelles.</p>
+  </div>
+
+  <div class="carte">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+      <h2 style="margin:0"><span class="emoj">⭐</span>Répartition par niveau</h2>
+      <a class="btn petit principal" href="#/nouvelle">＋ Ajouter une fiche</a>
+    </div>
+    ${NIVEAUX.map(n => {
+      const nb = actives.filter(f => f.level === n.niveau).length;
+      const pct = Math.round(nb / maxRepart * 100);
+      return `<div class="barre-repart">
+        <span class="etiquette" title="${echapperHtml(n.description)}">${n.symbole} ${n.niveau}. ${echapperHtml(n.titre)}</span>
+        <span class="piste"><span class="remplissage" style="display:block;width:${pct}%"></span></span>
+        <span class="nombre">${nb}</span>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">🕒</span>Dernières fiches modifiées</h2>
+    ${recentes.length
+      ? `<div class="liste-fiches">${recentes.map(f => htmlCarteFiche(f)).join('')}</div>`
+      : `<div class="etat-vide"><span class="emoj">🌠</span><p>Votre ciel est encore vide. Ajoutez votre première étoile !</p><a class="btn principal" href="#/nouvelle">✨ Ajouter une fiche</a></div>`}
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">📜</span>Dernières activités</h2>
+    ${activites.length
+      ? activites.map(ev => htmlEvenement(ev, pseudoMap)).join('')
+      : `<div class="etat-vide"><span class="emoj">📖</span><p>Aucune activité pour le moment.</p></div>`}
+  </div>
+
+  <div class="note-confidentialite">🔒 Toutes vos données restent sur cet appareil. Pensez à exporter une sauvegarde JSON régulièrement — les données locales peuvent être effacées par le navigateur ou le système.</div>`;
+}
+
+/* ---------- Écran 2 : Mes étoiles ---------- */
+
+let filtreEtoiles = { recherche: '', niveau: '', distinction: '', tri: 'niveau-desc', voirArchivees: false };
+
+async function rendreEtoiles() {
+  const fiches = await obtenirFiches();
+  let liste = filtreEtoiles.voirArchivees ? fiches : fiches.filter(f => !f.archived);
+
+  if (filtreEtoiles.recherche) {
+    const q = filtreEtoiles.recherche.toLowerCase();
+    liste = liste.filter(f => f.pseudo.toLowerCase().includes(q) || (f.discordId || '').toLowerCase().includes(q));
+  }
+  if (filtreEtoiles.niveau) liste = liste.filter(f => f.level === Number(filtreEtoiles.niveau));
+  if (filtreEtoiles.distinction) liste = liste.filter(f => (f.distinctions || []).includes(filtreEtoiles.distinction));
+
+  const tris = {
+    'niveau-desc':  (a, b) => b.level - a.level || a.pseudo.localeCompare(b.pseudo, 'fr'),
+    'niveau-asc':   (a, b) => a.level - b.level || a.pseudo.localeCompare(b.pseudo, 'fr'),
+    'pseudo':       (a, b) => a.pseudo.localeCompare(b.pseudo, 'fr'),
+    'ajout-desc':   (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    'ajout-asc':    (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+    'modif-desc':   (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
+    'modif-asc':    (a, b) => new Date(a.updatedAt) - new Date(b.updatedAt)
+  };
+  liste.sort(tris[filtreEtoiles.tri] || tris['niveau-desc']);
+
+  app.innerHTML = `
+  <h1 class="degrade-titre" style="margin:.4rem 0 1rem">Mes étoiles</h1>
+  <div class="barre-outils">
+    <input type="search" id="recherche" placeholder="Rechercher un pseudo…" value="${echapperHtml(filtreEtoiles.recherche)}" aria-label="Rechercher un pseudo">
+    <select id="tri" aria-label="Trier les fiches">
+      <option value="niveau-desc" ${filtreEtoiles.tri==='niveau-desc'?'selected':''}>Niveau ↓</option>
+      <option value="niveau-asc" ${filtreEtoiles.tri==='niveau-asc'?'selected':''}>Niveau ↑</option>
+      <option value="pseudo" ${filtreEtoiles.tri==='pseudo'?'selected':''}>Pseudo A→Z</option>
+      <option value="ajout-desc" ${filtreEtoiles.tri==='ajout-desc'?'selected':''}>Date d'ajout ↓</option>
+      <option value="ajout-asc" ${filtreEtoiles.tri==='ajout-asc'?'selected':''}>Date d'ajout ↑</option>
+      <option value="modif-desc" ${filtreEtoiles.tri==='modif-desc'?'selected':''}>Modification ↓</option>
+      <option value="modif-asc" ${filtreEtoiles.tri==='modif-asc'?'selected':''}>Modification ↑</option>
+    </select>
+  </div>
+  <div class="barre-outils">
+    <select id="filtre-niveau" aria-label="Filtrer par niveau">
+      <option value="">Tous les niveaux</option>
+      ${NIVEAUX.map(n => `<option value="${n.niveau}" ${String(filtreEtoiles.niveau)===String(n.niveau)?'selected':''}>${n.symbole} ${n.niveau}. ${n.titre}</option>`).join('')}
+    </select>
+    <select id="filtre-distinction" aria-label="Filtrer par distinction">
+      <option value="">Toutes les distinctions</option>
+      ${DISTINCTIONS.map(d => `<option value="${d.id}" ${filtreEtoiles.distinction===d.id?'selected':''}>${d.symbole} ${d.nom}</option>`).join('')}
+    </select>
+    <label class="check-ligne"><input type="checkbox" id="voir-archivees" ${filtreEtoiles.voirArchivees?'checked':''}> Voir les archivées</label>
+  </div>
+  <div class="liste-fiches" id="liste-fiches">
+    ${liste.length ? liste.map(f => htmlCarteFiche(f, {
+      actions: f.archived
+        ? `<button class="btn petit succes" data-restaurer="${f.id}">♻️</button>`
+        : `<button class="btn petit" data-archiver="${f.id}" title="Archiver">📦</button>`
+    })).join('') : `<div class="carte etat-vide"><span class="emoj">🔭</span><p>Aucune fiche ne correspond. Ajustez vos filtres ou ajoutez une étoile.</p><a class="btn principal" href="#/nouvelle">✨ Ajouter une fiche</a></div>`}
+  </div>`;
+
+  document.getElementById('recherche').addEventListener('input', e => { filtreEtoiles.recherche = e.target.value; rendreEtoiles(); setTimeout(() => { const r = document.getElementById('recherche'); r.focus(); r.setSelectionRange(r.value.length, r.value.length); }, 0); });
+  document.getElementById('tri').addEventListener('change', e => { filtreEtoiles.tri = e.target.value; rendreEtoiles(); });
+  document.getElementById('filtre-niveau').addEventListener('change', e => { filtreEtoiles.niveau = e.target.value; rendreEtoiles(); });
+  document.getElementById('filtre-distinction').addEventListener('change', e => { filtreEtoiles.distinction = e.target.value; rendreEtoiles(); });
+  document.getElementById('voir-archivees').addEventListener('change', e => { filtreEtoiles.voirArchivees = e.target.checked; rendreEtoiles(); });
+
+  document.querySelectorAll('[data-archiver]').forEach(b => b.onclick = async () => {
+    const f = await ficheActive(b.dataset.archiver);
+    if (f) await archiverFiche(f);
+  });
+  document.querySelectorAll('[data-restaurer]').forEach(b => b.onclick = async () => {
+    const f = await ficheActive(b.dataset.restaurer);
+    if (f) await restaurerFiche(f);
+  });
+}
+
+async function archiverFiche(f) {
+  f.archived = true;
+  f.updatedAt = new Date().toISOString();
+  await enregistrerFicheEtEvenements(f, [nouvelEvenement(f.id, 'archived')]);
+  toast(`« ${f.pseudo} » archivée.`);
+  naviguer();
+}
+
+async function restaurerFiche(f) {
+  f.archived = false;
+  f.updatedAt = new Date().toISOString();
+  await enregistrerFicheEtEvenements(f, [nouvelEvenement(f.id, 'restored')]);
+  toast(`« ${f.pseudo} » restaurée.`);
+  naviguer();
+}
+
+/* ---------- Écran 3 : Fiche individuelle ---------- */
+
+async function rendreFiche(id) {
+  const f = await ficheActive(id);
+  if (!f) {
+    app.innerHTML = `<div class="carte etat-vide"><span class="emoj">🌫️</span><p>Cette fiche n'existe pas (ou a été supprimée).</p><a class="btn principal" href="#/etoiles">Retour à mes étoiles</a></div>`;
+    return;
+  }
+  const historique = (await obtenirHistorique())
+    .filter(ev => ev.friendId === id)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const niveau = NIVEAUX[f.level - 1];
+  app.innerHTML = `
+  <a class="retour" href="#/etoiles">← Mes étoiles</a>
+  <div class="carte">
+    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      ${htmlAvatar(f, 'grand')}
+      <div style="flex:1;min-width:180px">
+        <h1 style="font-size:1.4rem">${echapperHtml(f.pseudo)} ${f.archived ? '<span class="badge archive">archivée</span>' : ''}</h1>
+        ${f.discordId ? `<div style="font-size:.85rem;color:var(--texte-faible)">ID Discord : ${echapperHtml(f.discordId)}</div>` : ''}
+        <div style="margin-top:.4rem">${badgeNiveau(f.level)}</div>
+        <div style="font-size:.85rem;color:var(--or);font-style:italic;margin-top:.2rem">${echapperHtml(niveau.description)}</div>
+      </div>
+    </div>
+    <hr class="filet">
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <a class="btn principal" href="#/modifier/${f.id}">✏️ Modifier</a>
+      ${f.archived
+        ? `<button class="btn succes" id="btn-restaurer">♻️ Restaurer</button>`
+        : `<button class="btn" id="btn-archiver">📦 Archiver</button>`}
+      <button class="btn danger" id="btn-supprimer">🗑️ Supprimer</button>
+    </div>
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">🏅</span>Distinctions</h2>
+    ${(f.distinctions && f.distinctions.length)
+      ? `<div class="grille-distinctions">${f.distinctions.map(id => {
+          const d = DISTINCTIONS.find(x => x.id === id);
+          return d ? `<span class="btn-distinction" aria-pressed="true"><span>${d.symbole}</span><span class="nom-dist">${d.nom}</span></span>` : '';
+        }).join('')}</div>`
+      : `<p style="font-size:.88rem;color:var(--texte-faible)">Aucune distinction pour l'instant.</p>`}
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">💬</span>Commentaire personnel</h2>
+    ${f.comment ? `<p style="white-space:pre-wrap;font-size:.95rem">${echapperHtml(f.comment)}</p>` : `<p style="font-size:.88rem;color:var(--texte-faible)">Aucun commentaire.</p>`}
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">📅</span>Informations</h2>
+    <p style="font-size:.88rem;color:var(--texte-faible)">
+      Créée le ${formatDateHeure(f.createdAt)}<br>
+      Dernière modification le ${formatDateHeure(f.updatedAt)}
+    </p>
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">📜</span>Historique de cette fiche</h2>
+    ${historique.length
+      ? historique.map(ev => htmlEvenement(ev, new Map([[f.id, f.pseudo]]))).join('')
+      : `<div class="etat-vide"><span class="emoj">📖</span><p>Aucun événement enregistré.</p></div>`}
+  </div>`;
+
+  const btnArchiver = document.getElementById('btn-archiver');
+  if (btnArchiver) btnArchiver.onclick = () => confirmerSimple('Archiver cette fiche ?', `« ${f.pseudo} » sera retirée des fiches actives mais conservée avec son historique.`, 'Archiver', () => archiverFiche(f));
+  const btnRestaurer = document.getElementById('btn-restaurer');
+  if (btnRestaurer) btnRestaurer.onclick = () => restaurerFiche(f);
+  document.getElementById('btn-supprimer').onclick = () =>
+    confirmerRenforce(
+      'Supprimer définitivement ?',
+      `La fiche de « ${f.pseudo} », ses distinctions et son contenu seront définitivement effacés de cet appareil. Une trace minimale sera conservée dans le journal. Cette action est irréversible.`,
+      f.pseudo, 'Tout supprimer',
+      () => supprimerFicheDefinitive(f)
+    );
+}
+
+async function supprimerFicheDefinitive(f) {
+  const trace = nouvelEvenement(f.id, 'deleted', { pseudo: f.pseudo, level: f.level }, null, 'Suppression définitive confirmée par l’utilisateur');
+  await supprimerFicheEtHistorique(f.id, trace);
+  toast(`Fiche « ${f.pseudo} » supprimée.`);
+  location.hash = '#/etoiles';
+}
+
+/* ---------- Écran 4 : Création / modification d'une fiche ---------- */
+
+let brouillonNiveau = null;
+let brouillonDistinctions = [];
+
+async function rendreFormulaire(id) {
+  let f = null;
+  if (id) {
+    f = await ficheActive(id);
+    if (!f) {
+      app.innerHTML = `<div class="carte etat-vide"><span class="emoj">🌫️</span><p>Fiche introuvable.</p><a class="btn principal" href="#/etoiles">Retour</a></div>`;
+      return;
+    }
+  }
+  brouillonNiveau = f ? f.level : null;
+  brouillonDistinctions = f ? [...(f.distinctions || [])] : [];
+
+  app.innerHTML = `
+  <a class="retour" href="${f ? '#/fiche/' + f.id : '#/etoiles'}">← Annuler</a>
+  <h1 class="degrade-titre" style="margin:.4rem 0 1rem">${f ? 'Modifier la fiche' : 'Nouvelle étoile'}</h1>
+
+  <div class="carte">
+    <div class="champ" id="champ-pseudo">
+      <label for="pseudo">Pseudo Discord (obligatoire)</label>
+      <input type="text" id="pseudo" maxlength="60" value="${f ? echapperHtml(f.pseudo) : ''}" autocomplete="off">
+      <div class="erreur">Le pseudo est obligatoire.</div>
+    </div>
+    <div class="champ">
+      <label for="discord-id">Identifiant Discord (facultatif)</label>
+      <input type="text" id="discord-id" maxlength="60" value="${f ? echapperHtml(f.discordId || '') : ''}" autocomplete="off" placeholder="Ex. pseudo#1234 ou numéro">
+      <div class="aide">Jamais de mot de passe ni de jeton — uniquement un identifiant public.</div>
+    </div>
+    <div class="champ">
+      <label for="avatar-url">Avatar — URL d'image (facultatif)</label>
+      <input type="text" id="avatar-url" value="${f && f.avatar && !f.avatar.startsWith('data:') ? echapperHtml(f.avatar) : ''}" placeholder="https://…">
+      <div class="aide">Ou choisissez un fichier image :</div>
+      <input type="file" id="avatar-fichier" accept="image/*" style="margin-top:.4rem">
+      ${f && f.avatar ? `<div class="aide">Avatar actuel : ${f.avatar.startsWith('data:') ? 'image importée' : 'URL enregistrée'} <button type="button" class="btn petit danger" id="retirer-avatar" style="margin-left:.4rem">Retirer</button></div>` : ''}
+    </div>
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">⭐</span>Niveau céleste <span style="color:var(--or)">*</span></h2>
+    <div class="grille-niveaux" id="grille-niveaux">
+      ${NIVEAUX.map(n => `
+        <button type="button" class="btn-niveau" data-niveau="${n.niveau}" aria-pressed="${brouillonNiveau === n.niveau}">
+          <span class="symbole">${n.symbole}</span>
+          <span>${n.niveau}. ${echapperHtml(n.titre)}</span>
+        </button>`).join('')}
+    </div>
+    <div class="desc-niveau" id="desc-niveau">${brouillonNiveau ? echapperHtml(NIVEAUX[brouillonNiveau - 1].description) : 'Choisissez un niveau — c’est une appréciation symbolique, pas une mesure.'}</div>
+    <div class="erreur" id="erreur-niveau" style="display:none;color:var(--danger);font-size:.8rem;margin-top:.3rem">Choisissez un niveau entre 1 et 10.</div>
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">🏅</span>Distinctions (facultatif, plusieurs possibles)</h2>
+    <div class="grille-distinctions" id="grille-distinctions">
+      ${DISTINCTIONS.map(d => `
+        <button type="button" class="btn-distinction" data-distinction="${d.id}" aria-pressed="${brouillonDistinctions.includes(d.id)}" title="${echapperHtml(d.sens)}">
+          <span>${d.symbole}</span><span class="nom-dist">${d.nom}</span>
+        </button>`).join('')}
+    </div>
+  </div>
+
+  <div class="carte">
+    <div class="champ">
+      <label for="commentaire">Commentaire personnel (facultatif)</label>
+      <textarea id="commentaire" maxlength="4000" placeholder="Pourquoi cette étoile brille-t-elle dans votre univers ?">${f ? echapperHtml(f.comment || '') : ''}</textarea>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+    <button class="btn principal" id="btn-enregistrer" style="flex:1">${f ? '💾 Enregistrer les modifications' : '✨ Créer la fiche'}</button>
+    <a class="btn" href="${f ? '#/fiche/' + f.id : '#/etoiles'}">Annuler</a>
+  </div>`;
+
+  document.querySelectorAll('.btn-niveau').forEach(b => {
+    b.onclick = () => {
+      brouillonNiveau = Number(b.dataset.niveau);
+      document.querySelectorAll('.btn-niveau').forEach(x => x.setAttribute('aria-pressed', String(Number(x.dataset.niveau) === brouillonNiveau)));
+      document.getElementById('desc-niveau').textContent = NIVEAUX[brouillonNiveau - 1].description;
+      document.getElementById('erreur-niveau').style.display = 'none';
+    };
+  });
+  document.querySelectorAll('.btn-distinction').forEach(b => {
+    b.onclick = () => {
+      const idD = b.dataset.distinction;
+      const i = brouillonDistinctions.indexOf(idD);
+      if (i >= 0) brouillonDistinctions.splice(i, 1); else brouillonDistinctions.push(idD);
+      b.setAttribute('aria-pressed', String(brouillonDistinctions.includes(idD)));
+    };
+  });
+
+  let avatarData = f ? f.avatar : null;
+  const retirer = document.getElementById('retirer-avatar');
+  if (retirer) retirer.onclick = () => { avatarData = null; document.getElementById('avatar-url').value = ''; retirer.parentElement.remove(); };
+
+  document.getElementById('avatar-fichier').addEventListener('change', e => {
+    const fichier = e.target.files[0];
+    if (!fichier) return;
+    if (fichier.size > LIMITE_AVATAR) { toast('Image trop lourde (max 500 Ko). Utilisez une URL ou une image plus petite.'); e.target.value = ''; return; }
+    const lecteur = new FileReader();
+    lecteur.onload = () => { avatarData = lecteur.result; toast('Avatar chargé depuis le fichier.'); };
+    lecteur.readAsDataURL(fichier);
+  });
+
+  document.getElementById('btn-enregistrer').onclick = async () => {
+    const pseudo = document.getElementById('pseudo').value.trim();
+    const champPseudo = document.getElementById('champ-pseudo');
+    champPseudo.classList.toggle('invalide', !pseudo);
+    if (!pseudo) { document.getElementById('pseudo').focus(); return; }
+    if (!brouillonNiveau) {
+      document.getElementById('erreur-niveau').style.display = 'block';
+      document.getElementById('grille-niveaux').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    const discordId = document.getElementById('discord-id').value.trim() || null;
+    const urlAvatar = document.getElementById('avatar-url').value.trim();
+    const avatar = urlAvatar || avatarData;
+    const comment = document.getElementById('commentaire').value;
+
+    if (f) {
+      await modifierFiche(f, { pseudo, discordId, avatar, comment });
+    } else {
+      await creerFiche({ pseudo, discordId, avatar, comment });
+    }
+  };
+}
+
+async function creerFiche(donnees) {
+  const maintenant = new Date().toISOString();
+  const f = {
+    id: uuid(),
+    pseudo: donnees.pseudo,
+    discordId: donnees.discordId,
+    avatar: donnees.avatar,
+    level: brouillonNiveau,
+    distinctions: [...brouillonDistinctions],
+    comment: donnees.comment,
+    createdAt: maintenant,
+    updatedAt: maintenant,
+    archived: false
+  };
+  await enregistrerFicheEtEvenements(f, [
+    nouvelEvenement(f.id, 'created', null, { pseudo: f.pseudo, level: f.level })
+  ]);
+  toast(`✨ « ${f.pseudo} » rejoint votre univers.`);
+  location.hash = `#/fiche/${f.id}`;
+}
+
+async function modifierFiche(f, donnees) {
+  const evenements = [];
+  const avant = { pseudo: f.pseudo, discordId: f.discordId, avatar: f.avatar, level: f.level, distinctions: [...(f.distinctions || [])], comment: f.comment };
+
+  if (donnees.pseudo !== f.pseudo) f.pseudo = donnees.pseudo;
+  if (donnees.discordId !== f.discordId) f.discordId = donnees.discordId;
+  if (donnees.avatar !== f.avatar) f.avatar = donnees.avatar;
+
+  if (brouillonNiveau !== f.level) {
+    evenements.push(nouvelEvenement(f.id, 'level_changed', f.level, brouillonNiveau));
+    f.level = brouillonNiveau;
+  }
+  const avantD = new Set(f.distinctions || []);
+  const apresD = new Set(brouillonDistinctions);
+  for (const idD of brouillonDistinctions) if (!avantD.has(idD)) evenements.push(nouvelEvenement(f.id, 'distinction_added', null, idD));
+  for (const idD of avantD) if (!apresD.has(idD)) evenements.push(nouvelEvenement(f.id, 'distinction_removed', idD, null));
+  f.distinctions = [...brouillonDistinctions];
+
+  if ((donnees.comment || '') !== (f.comment || '')) {
+    evenements.push(nouvelEvenement(f.id, 'comment_changed', f.comment || null, donnees.comment || null));
+    f.comment = donnees.comment;
+  }
+
+  f.updatedAt = new Date().toISOString();
+  // Trace des changements de pseudo/avatar dans le commentaire des événements de niveau si besoin : on historise tout changement notable.
+  if (!evenements.length && JSON.stringify(avant) !== JSON.stringify({ pseudo: f.pseudo, discordId: f.discordId, avatar: f.avatar, level: f.level, distinctions: f.distinctions, comment: f.comment })) {
+    evenements.push(nouvelEvenement(f.id, 'comment_changed', null, null, 'Mise à jour des informations de la fiche'));
+  }
+  await enregistrerFicheEtEvenements(f, evenements);
+  toast(`Fiche de « ${f.pseudo} » enregistrée.`);
+  location.hash = `#/fiche/${f.id}`;
+}
+
+/* ---------- Écran 5 : Classement ---------- */
+
+let filtreClassement = { recherche: '', niveau: '', distinction: '', triSecondaire: 'pseudo' };
+
+async function rendreClassement() {
+  let liste = (await obtenirFiches()).filter(f => !f.archived);
+  if (filtreClassement.recherche) {
+    const q = filtreClassement.recherche.toLowerCase();
+    liste = liste.filter(f => f.pseudo.toLowerCase().includes(q));
+  }
+  if (filtreClassement.niveau) liste = liste.filter(f => f.level === Number(filtreClassement.niveau));
+  if (filtreClassement.distinction) liste = liste.filter(f => (f.distinctions || []).includes(filtreClassement.distinction));
+  liste.sort((a, b) =>
+    b.level - a.level ||
+    (filtreClassement.triSecondaire === 'modif'
+      ? new Date(b.updatedAt) - new Date(a.updatedAt)
+      : a.pseudo.localeCompare(b.pseudo, 'fr')));
+
+  app.innerHTML = `
+  <h1 class="degrade-titre" style="margin:.4rem 0 1rem">Classement céleste</h1>
+  <div class="note-confidentialite">🔒 Ce classement est strictement local et privé : il n'est jamais partagé ni publié.</div>
+  <div class="barre-outils">
+    <input type="search" id="cl-recherche" placeholder="Rechercher…" value="${echapperHtml(filtreClassement.recherche)}">
+    <select id="cl-niveau">
+      <option value="">Tous niveaux</option>
+      ${NIVEAUX.map(n => `<option value="${n.niveau}" ${String(filtreClassement.niveau)===String(n.niveau)?'selected':''}>${n.niveau}. ${n.titre}</option>`).join('')}
+    </select>
+    <select id="cl-distinction">
+      <option value="">Toutes distinctions</option>
+      ${DISTINCTIONS.map(d => `<option value="${d.id}" ${filtreClassement.distinction===d.id?'selected':''}>${d.symbole} ${d.nom}</option>`).join('')}
+    </select>
+  </div>
+  <div class="barre-outils">
+    <span style="font-size:.85rem;color:var(--texte-faible)">Égalité de niveau : trier par</span>
+    <select id="cl-tri-secondaire" style="max-width:180px">
+      <option value="pseudo" ${filtreClassement.triSecondaire==='pseudo'?'selected':''}>Pseudo A→Z</option>
+      <option value="modif" ${filtreClassement.triSecondaire==='modif'?'selected':''}>Date de modification ↓</option>
+    </select>
+  </div>
+  <div class="liste-fiches">
+    ${liste.length ? liste.map((f, i) => `
+      <div class="carte carte-fiche-lien" style="display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem">
+        <span class="rang">${i + 1}</span>
+        <a class="carte-fiche" style="flex:1" href="#/fiche/${f.id}">
+          ${htmlAvatar(f)}
+          <div class="infos">
+            <div class="pseudo">${echapperHtml(f.pseudo)}</div>
+            <div style="margin-top:.15rem">${badgeNiveau(f.level)} ${symbolesDistinctions(f.distinctions)}</div>
+          </div>
+        </a>
+      </div>`).join('')
+    : `<div class="carte etat-vide"><span class="emoj">🌫️</span><p>Aucune fiche active ne correspond.</p></div>`}
+  </div>`;
+
+  document.getElementById('cl-recherche').addEventListener('input', e => { filtreClassement.recherche = e.target.value; rendreClassement(); setTimeout(() => { const r = document.getElementById('cl-recherche'); r.focus(); r.setSelectionRange(r.value.length, r.value.length); }, 0); });
+  document.getElementById('cl-niveau').addEventListener('change', e => { filtreClassement.niveau = e.target.value; rendreClassement(); });
+  document.getElementById('cl-distinction').addEventListener('change', e => { filtreClassement.distinction = e.target.value; rendreClassement(); });
+  document.getElementById('cl-tri-secondaire').addEventListener('change', e => { filtreClassement.triSecondaire = e.target.value; rendreClassement(); });
+}
+
+/* ---------- Écran 6 : Chronologie / historique global ---------- */
+
+let filtreHistorique = { type: '', idFiche: '' };
+
+async function rendreHistorique() {
+  let evts = await obtenirHistorique();
+  const fiches = await obtenirFiches();
+  const pseudoMap = new Map(fiches.map(f => [f.id, f.pseudo]));
+
+  if (filtreHistorique.type) evts = evts.filter(e => e.type === filtreHistorique.type);
+  if (filtreHistorique.idFiche) evts = evts.filter(e => e.friendId === filtreHistorique.idFiche);
+  evts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  app.innerHTML = `
+  <h1 class="degrade-titre" style="margin:.4rem 0 1rem">Chronologie</h1>
+  <div class="note-confidentialite">📜 Journal append-only : chaque événement important de vos fiches est conservé ici, sans écraser le passé.</div>
+  <div class="barre-outils">
+    <select id="h-type">
+      <option value="">Tous les événements</option>
+      ${Object.entries(TYPES_EVENEMENT).map(([cle, v]) => `<option value="${cle}" ${filtreHistorique.type===cle?'selected':''}>${v.icone} ${v.libelle}</option>`).join('')}
+    </select>
+    <select id="h-fiche">
+      <option value="">Toutes les fiches</option>
+      ${[...pseudoMap.entries()].sort((a,b)=>a[1].localeCompare(b[1],'fr')).map(([id, p]) => `<option value="${id}" ${filtreHistorique.idFiche===id?'selected':''}>${echapperHtml(p)}</option>`).join('')}
+    </select>
+  </div>
+  <div class="carte">
+    ${evts.length ? evts.map(ev => htmlEvenement(ev, pseudoMap)).join('')
+      : `<div class="etat-vide"><span class="emoj">📖</span><p>Aucun événement ne correspond aux filtres.</p></div>`}
+  </div>`;
+
+  document.getElementById('h-type').addEventListener('change', e => { filtreHistorique.type = e.target.value; rendreHistorique(); });
+  document.getElementById('h-fiche').addEventListener('change', e => { filtreHistorique.idFiche = e.target.value; rendreHistorique(); });
+}
+
+/* ---------- Écran 7 : Paramètres (export / import / danger) ---------- */
+
+async function rendreParametres() {
+  const fiches = await obtenirFiches();
+  const evts = await obtenirHistorique();
+
+  app.innerHTML = `
+  <h1 class="degrade-titre" style="margin:.4rem 0 1rem">Paramètres</h1>
+
+  <div class="carte">
+    <h2><span class="emoj">💾</span>Sauvegarde JSON</h2>
+    <p style="font-size:.88rem;color:var(--texte-faible);margin-bottom:.7rem">
+      ${fiches.length} fiche(s) et ${evts.length} événement(s) sont stockés localement sur cet appareil.
+    </p>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+      <button class="btn principal" id="btn-export">⬇️ Exporter la sauvegarde JSON</button>
+    </div>
+    <div class="note-confidentialite">🔒 L'export ne contient aucun secret, aucun mot de passe ni aucune clé. Le chiffrement des sauvegardes est prévu en V1.4 — d'ici là, conservez le fichier en lieu sûr.</div>
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">📥</span>Importer une sauvegarde</h2>
+    <p style="font-size:.88rem;color:var(--texte-faible);margin-bottom:.7rem">
+      Le fichier est lu, validé et analysé <strong>avant</strong> toute modification. Vous garderez la main avec un résumé et une confirmation.
+    </p>
+    <input type="file" id="fichier-import" accept="application/json,.json" aria-label="Choisir un fichier de sauvegarde JSON">
+  </div>
+
+  <div class="carte">
+    <h2><span class="emoj">ℹ️</span>Informations</h2>
+    <p style="font-size:.88rem;color:var(--texte-faible)">
+      Application : <strong style="color:var(--texte)">${NOM_APP.replace('Celeste','Céleste')}</strong><br>
+      Version : <strong style="color:var(--texte)">V${VERSION_APP}</strong> (schéma v${SCHEMA_VERSION})<br>
+      Devise : « Ton univers. Tes étoiles. »
+    </p>
+    <p style="font-size:.8rem;color:var(--texte-faible);margin-top:.5rem">
+      Données locales : IndexedDB, hors connexion après installation. Aucune donnée n'est envoyée à Discord ni à un service tiers.
+    </p>
+  </div>
+
+  <div class="carte" style="border-color:rgba(255,138,138,.3)">
+    <h2 style="color:var(--danger)"><span class="emoj">⚠️</span>Zone dangereuse</h2>
+    <p style="font-size:.88rem;color:var(--texte-faible);margin-bottom:.7rem">Efface définitivement toutes les fiches, tout l'historique et tous les réglages de cet appareil. Pensez à exporter une sauvegarde au préalable.</p>
+    <button class="btn danger" id="btn-tout-supprimer">🗑️ Supprimer toutes les données</button>
+  </div>`;
+
+  document.getElementById('btn-export').onclick = exporterSauvegarde;
+  document.getElementById('fichier-import').addEventListener('change', e => {
+    if (e.target.files[0]) analyserImport(e.target.files[0]);
+    e.target.value = '';
+  });
+  document.getElementById('btn-tout-supprimer').onclick = () =>
+    confirmerRenforce(
+      'Tout effacer ?',
+      'Toutes les fiches, tout l’historique et tous les réglages seront définitivement supprimés de cet appareil. Aucun retour en arrière possible sans sauvegarde JSON.',
+      'SUPPRIMER', 'Tout effacer',
+      async () => { await effacerTout(); toast('Toutes les données ont été effacées.'); naviguer(); }
+    );
+}
+
+async function exporterSauvegarde() {
+  const [friends, history] = await Promise.all([obtenirFiches(), obtenirHistorique()]);
+  const sauvegarde = {
+    app: NOM_APP,
+    schemaVersion: SCHEMA_VERSION,
+    exportDate: new Date().toISOString(),
+    friends,
+    history,
+    settings: { versionApp: VERSION_APP }
+  };
+  const blob = new Blob([JSON.stringify(sauvegarde, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `registre-celeste-sauvegarde-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  toast('Sauvegarde JSON téléchargée.');
+}
+
+/* ---------- Import JSON : lecture, validation, détection, application ---------- */
+
+const ERREUR = { JSON_INVALIDE: 1, FORMAT_INCONNU: 2, SCHEMA_NON_SUPPORTE: 3, DONNEES_INVALIDES: 4 };
+
+function validerFicheImportee(f, index) {
+  const prefixe = `fiche n°${index + 1}`;
+  if (typeof f !== 'object' || f === null) return `${prefixe} : objet attendu.`;
+  if (typeof f.id !== 'string' || !f.id) return `${prefixe} : identifiant "id" manquant ou invalide.`;
+  if (typeof f.pseudo !== 'string' || !f.pseudo.trim()) return `${prefixe} : pseudo manquant ou vide.`;
+  if (f.pseudo.length > 60) return `${prefixe} : pseudo trop long (max 60).`;
+  if (f.discordId !== null && f.discordId !== undefined && typeof f.discordId !== 'string') return `${prefixe} : "discordId" doit être du texte ou null.`;
+  if (f.avatar !== null && f.avatar !== undefined && typeof f.avatar !== 'string') return `${prefixe} : "avatar" doit être du texte ou null.`;
+  if (!Number.isInteger(f.level) || f.level < 1 || f.level > 10) return `${prefixe} : niveau invalide (entier de 1 à 10 requis).`;
+  if (!Array.isArray(f.distinctions)) return `${prefixe} : "distinctions" doit être un tableau.`;
+  const idsConnus = new Set(DISTINCTIONS.map(d => d.id));
+  for (const d of f.distinctions) if (!idsConnus.has(d)) return `${prefixe} : distinction inconnue « ${d} ».`;
+  if (new Set(f.distinctions).size !== f.distinctions.length) return `${prefixe} : distinctions en double.`;
+  if (f.comment !== null && f.comment !== undefined && typeof f.comment !== 'string') return `${prefixe} : "comment" doit être du texte ou null.`;
+  if (typeof f.createdAt !== 'string' || isNaN(new Date(f.createdAt))) return `${prefixe} : "createdAt" invalide (ISO 8601 requis).`;
+  if (typeof f.updatedAt !== 'string' || isNaN(new Date(f.updatedAt))) return `${prefixe} : "updatedAt" invalide (ISO 8601 requis).`;
+  if (typeof f.archived !== 'boolean') return `${prefixe} : "archived" doit être un booléen.`;
+  if (typeof f.avatar === 'string' && f.avatar.length > 800 * 1024) return `${prefixe} : avatar trop volumineux.`;
+  return null;
+}
+
+function validerEvenementImporte(ev, index, idsFiches) {
+  const prefixe = `événement n°${index + 1}`;
+  if (typeof ev !== 'object' || ev === null) return `${prefixe} : objet attendu.`;
+  if (typeof ev.id !== 'string' || !ev.id) return `${prefixe} : identifiant manquant.`;
+  if (!idsFiches.has(ev.friendId)) return `${prefixe} : référence vers une fiche inconnue (${ev.friendId}).`;
+  if (!TYPES_EVENEMENT[ev.type]) return `${prefixe} : type d'événement inconnu (${ev.type}).`;
+  if (typeof ev.createdAt !== 'string' || isNaN(new Date(ev.createdAt))) return `${prefixe} : date invalide.`;
+  return null;
+}
+
+async function analyserImport(fichier) {
+  let donnees;
+  try {
+    donnees = JSON.parse(await fichier.text());
+  } catch (e) {
+    ouvrirModale(`<div class="modal"><h3>❌ Fichier invalide</h3><p>Le fichier n'est pas un JSON lisible. Aucune donnée n'a été modifiée.</p><div class="actions-modal"><button class="btn" onclick="fermerModale()">Fermer</button></div></div>`);
+    return;
+  }
+  // 1. Format attendu
+  if (donnees.app !== NOM_APP || typeof donnees.schemaVersion !== 'number') {
+    ouvrirModale(`<div class="modal"><h3>❌ Format non reconnu</h3><p>Ce fichier ne semble pas être une sauvegarde de <strong>${NOM_APP.replace('Celeste','Céleste')}</strong>. Import annulé, vos données sont intactes.</p><div class="actions-modal"><button class="btn" onclick="fermerModale()">Fermer</button></div></div>`);
+    return;
+  }
+  // 2. Version de schéma
+  if (donnees.schemaVersion > SCHEMA_VERSION) {
+    ouvrirModale(`<div class="modal"><h3>⚠️ Version trop récente</h3><p>Cette sauvegarde utilise le schéma v${donnees.schemaVersion}, alors que l'application gère le v${SCHEMA_VERSION}. Mettez à jour l'application avant d'importer. Aucune donnée modifiée.</p><div class="actions-modal"><button class="btn" onclick="fermerModale()">Fermer</button></div></div>`);
+    return;
+  }
+  // 3. Validation des champs
+  const friendsBruts = Array.isArray(donnees.friends) ? donnees.friends : null;
+  const historyBrut = Array.isArray(donnees.history) ? donnees.history : null;
+  if (!friendsBruts || !historyBrut) {
+    ouvrirModale(`<div class="modal"><h3>❌ Structure invalide</h3><p>Les sections "friends" et "history" doivent être des tableaux. Import annulé.</p><div class="actions-modal"><button class="btn" onclick="fermerModale()">Fermer</button></div></div>`);
+    return;
+  }
+  const erreurs = [];
+  const idsFiches = new Set();
+  friendsBruts.forEach((f, i) => {
+    const err = validerFicheImportee(f, i);
+    if (err) erreurs.push(err);
+    else if (idsFiches.has(f.id)) erreurs.push(`fiche n°${i + 1} : identifiant dupliqué dans le fichier (${f.id}).`);
+    else idsFiches.add(f.id);
+  });
+  historyBrut.forEach((ev, i) => {
+    const err = validerEvenementImporte(ev, i, idsFiches);
+    if (err) erreurs.push(err);
+  });
+  if (erreurs.length) {
+    ouvrirModale(`
+      <div class="modal">
+        <h3>❌ Sauvegarde invalide</h3>
+        <p>${erreurs.length} problème(s) détecté(s). Aucune donnée n'a été modifiée :</p>
+        <div class="resume-import">${erreurs.slice(0, 12).map(e => `<div class="ligne"><span>⚠️ ${echapperHtml(e)}</span></div>`).join('')}${erreurs.length > 12 ? `<div class="ligne"><span>… et ${erreurs.length - 12} autre(s).</span></div>` : ''}</div>
+        <div class="actions-modal"><button class="btn" onclick="fermerModale()">Fermer</button></div>
+      </div>`);
+    return;
+  }
+  // 4. Détection des doublons avec les données existantes
+  const existantes = await obtenirFiches();
+  const parId = new Map(existantes.map(f => [f.id, f]));
+  const parPseudo = new Map(existantes.map(f => [f.pseudo.toLowerCase(), f]));
+  const doublons = friendsBruts.filter(f => parId.has(f.id) || parPseudo.has(f.pseudo.toLowerCase()));
+  const nouvelles = friendsBruts.filter(f => !parId.has(f.id) && !parPseudo.has(f.pseudo.toLowerCase()));
+
+  // Résumé de l'opération
+  ouvrirModale(`
+    <div class="modal">
+      <h3>📥 Résumé de l'import</h3>
+      <div class="resume-import">
+        <div class="ligne"><span>Nouvelles fiches</span><strong>${nouvelles.length}</strong></div>
+        <div class="ligne"><span>Doublons détectés</span><strong>${doublons.length}</strong></div>
+        <div class="ligne"><span>Événements d'historique</span><strong>${historyBrut.length}</strong></div>
+        <div class="ligne"><span>Fiches actuellement sur l'appareil</span><strong>${existantes.length}</strong></div>
+      </div>
+      ${doublons.length ? `
+        <p style="font-size:.85rem;margin-top:.4rem">Pour les <strong>${doublons.length}</strong> doublon(s) :</p>
+        <label class="check-ligne" style="display:flex;margin:.3rem 0"><input type="radio" name="mode-doublon" value="garder" checked> Garder les fiches existantes (recommandé)</label>
+        <label class="check-ligne" style="display:flex;margin:.3rem 0"><input type="radio" name="mode-doublon" value="remplacer"> Utiliser les fiches importées</label>` : ''}
+      <p style="font-size:.82rem;color:var(--texte-faible);margin-top:.5rem">Mode global :</p>
+      <label class="check-ligne" style="display:flex;margin:.3rem 0"><input type="radio" name="mode-global" value="fusionner" checked> Fusionner avec mes données actuelles</label>
+      <label class="check-ligne" style="display:flex;margin:.3rem 0"><input type="radio" name="mode-global" value="remplacer"> Tout remplacer par cette sauvegarde</label>
+      <div class="avertissement">Le remplacement efface toutes les données actuelles avant d'appliquer la sauvegarde. Un instantané de secours sera tout de même conservé pendant l'opération.</div>
+      <div class="actions-modal">
+        <button class="btn" data-action="annuler-import">Annuler</button>
+        <button class="btn principal" data-action="confirmer-import">✅ Appliquer l'import</button>
+      </div>
+    </div>`);
+
+  const fond = document.querySelector('.modal-fond');
+  fond.querySelector('[data-action=annuler-import]').onclick = fermerModale;
+  fond.querySelector('[data-action=confirmer-import]').onclick = () => {
+    const modeGlobal = fond.querySelector('input[name=mode-global]:checked').value;
+    const modeDoublon = fond.querySelector('input[name=mode-doublon]:checked')?.value || 'garder';
+    fermerModale();
+    appliquerImport(donnees, { modeGlobal, modeDoublon });
+  };
+}
+
+async function appliquerImport(donnees, { modeGlobal, modeDoublon }) {
+  // Instantané de secours pour retour possible en cas d'échec
+  const [fichesAvant, histAvant] = await Promise.all([obtenirFiches(), obtenirHistorique()]);
+
+  try {
+    if (modeGlobal === 'remplacer') {
+      await effacerTout();
+    }
+    const existantes = modeGlobal === 'remplacer' ? [] : await obtenirFiches();
+    const parId = new Map(existantes.map(f => [f.id, f]));
+    const parPseudo = new Map(existantes.map(f => [f.pseudo.toLowerCase(), f]));
+
+    // Application transactionnelle
+    await new Promise((resoudre, rejeter) => {
+      const tx = bd.transaction(['friends', 'history'], 'readwrite');
+      const stFiches = tx.objectStore('friends');
+      const stHist = tx.objectStore('history');
+      donnees.friends.forEach(f => {
+        const doublonId = parId.get(f.id);
+        const doublonPseudo = parPseudo.get(f.pseudo.toLowerCase());
+        if (doublonId || doublonPseudo) {
+          if (modeDoublon === 'remplacer') {
+            const cible = doublonId || doublonPseudo;
+            stFiches.put({ ...f, id: cible.id, createdAt: cible.createdAt });
+          }
+          // 'garder' : on ignore la fiche importée
+        } else {
+          stFiches.put(f);
+        }
+      });
+      donnees.history.forEach(ev => stHist.put(ev));
+      tx.oncomplete = () => resoudre();
+      tx.onerror = () => rejeter(tx.error);
+      tx.onabort = () => rejeter(tx.error || new Error('Transaction annulée'));
+    });
+    toast(`✅ Import terminé (${donnees.friends.length} fiche(s), ${donnees.history.length} événement(s)).`);
+    naviguer();
+  } catch (erreur) {
+    console.error('Échec de l’import, restauration de l’instantané :', erreur);
+    // Restauration de l'état précédent
+    await effacerTout();
+    for (const f of fichesAvant) await ecrire('friends', f);
+    for (const ev of histAvant) await ecrire('history', ev);
+    ouvrirModale(`<div class="modal"><h3>❌ Import échoué</h3><p>Une erreur est survenue pendant l'import. Vos données précédentes ont été restaurées intactes.</p><div class="actions-modal"><button class="btn" onclick="fermerModale()">Fermer</button></div></div>`);
+  }
+}
+
+/* ---------- Démarrage ---------- */
+
+(async function demarrer() {
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => { /* hors-ligne indisponible (ex. file://) */ });
+  }
+  try {
+    bd = await ouvrirBD();
+  } catch (e) {
+    document.getElementById('app').innerHTML = `
+      <div class="carte etat-vide">
+        <span class="emoj">💥</span>
+        <p>Impossible d'ouvrir la base de données locale (IndexedDB).<br>
+        Vérifiez le mode de navigation privée ou les permissions du navigateur.</p>
+      </div>`;
+    return;
+  }
+  if (!location.hash) location.hash = '#/accueil';
+  naviguer();
+})();
+</script>
+</body>
+</html>
